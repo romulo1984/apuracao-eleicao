@@ -8424,7 +8424,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = {
   props: {
-    candidato: Object
+    candidato: Object,
+    geral: Object
+  },
+  computed: {
+    percent: function percent() {
+      return Math.floor(this.candidato.v / this.geral.vv * 100);
+    }
   },
   methods: {
     getCandidateImage: function getCandidateImage(id) {
@@ -8433,14 +8439,14 @@ var _default = {
   }
 };
 exports.default = _default;
-        var $5d73f3 = exports.default || module.exports;
+        var $2cacc5 = exports.default || module.exports;
       
-      if (typeof $5d73f3 === 'function') {
-        $5d73f3 = $5d73f3.options;
+      if (typeof $2cacc5 === 'function') {
+        $2cacc5 = $2cacc5.options;
       }
     
         /* template */
-        Object.assign($5d73f3, (function () {
+        Object.assign($2cacc5, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -8476,50 +8482,37 @@ exports.default = _default;
             ])
           ]),
           _vm._v(" "),
-          _vm._m(0)
+          _c("div", { staticClass: "ml-3 text-right" }, [
+            _c("h4", [_vm._v(_vm._s(_vm.percent) + "%")]),
+            _vm._v(" "),
+            _c("h6", [_vm._v(_vm._s(_vm.candidato.v) + " votos")])
+          ])
         ]),
         _vm._v(" "),
-        _vm._m(1)
+        _c("div", { staticClass: "progress" }, [
+          _c("div", {
+            staticClass: "progress-bar",
+            style: "width: " + _vm.percent + "%",
+            attrs: {
+              role: "progressbar",
+              "aria-valuenow": _vm.percent,
+              "aria-valuemin": "0",
+              "aria-valuemax": "100"
+            }
+          })
+        ])
       ])
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "ml-3 text-right" }, [
-      _c("h4", [_vm._v("0%")]),
-      _vm._v(" "),
-      _c("h6", [_vm._v("0 votos")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "progress" }, [
-      _c("div", {
-        staticClass: "progress-bar",
-        staticStyle: { width: "25%" },
-        attrs: {
-          role: "progressbar",
-          "aria-valuenow": "25",
-          "aria-valuemin": "0",
-          "aria-valuemax": "100"
-        }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
           return {
             render: render,
             staticRenderFns: staticRenderFns,
             _compiled: true,
-            _scopeId: "data-v-5d73f3",
+            _scopeId: "data-v-2cacc5",
             functional: undefined
           };
         })());
@@ -8532,9 +8525,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$5d73f3', $5d73f3);
+            api.createRecord('$2cacc5', $2cacc5);
           } else {
-            api.reload('$5d73f3', $5d73f3);
+            api.reload('$2cacc5', $2cacc5);
           }
         }
 
@@ -8845,14 +8838,14 @@ var _default = {
 
 };
 exports.default = _default;
-        var $3fd59a = exports.default || module.exports;
+        var $ce8e36 = exports.default || module.exports;
       
-      if (typeof $3fd59a === 'function') {
-        $3fd59a = $3fd59a.options;
+      if (typeof $ce8e36 === 'function') {
+        $ce8e36 = $ce8e36.options;
       }
     
         /* template */
-        Object.assign($3fd59a, (function () {
+        Object.assign($ce8e36, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -8963,9 +8956,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$3fd59a', $3fd59a);
+            api.createRecord('$ce8e36', $ce8e36);
           } else {
-            api.reload('$3fd59a', $3fd59a);
+            api.reload('$ce8e36', $ce8e36);
           }
         }
 
@@ -14214,9 +14207,11 @@ var _orderBy2 = _interopRequireDefault(require("lodash/orderBy"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getApiEndpoint(cargo, abrangencia, uf) {
-  var BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/';
-  var codUf = abrangencia === 'br' ? 'br' : uf;
-  var codEleicao = abrangencia === 'br' ? 295 : 297;
+  var BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/'; // const BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
+
+  var codUf = abrangencia === 'br' ? 'br' : uf; // let codEleicao = (abrangencia === 'br') ? '0295' : '0297'
+
+  var codEleicao = abrangencia === 'br' ? '0295' : '7555';
   var codCargo = {
     presidente: 1,
     governador: 3,
@@ -14225,7 +14220,7 @@ function getApiEndpoint(cargo, abrangencia, uf) {
     destadual: 7,
     ddistrital: 8
   };
-  return BASE_API + codEleicao + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e000' + codEleicao + '-w.js';
+  return BASE_API + codEleicao + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e00' + codEleicao + '-w.js';
 }
 
 var _default = {
@@ -14240,30 +14235,32 @@ var _default = {
       cargo: 'presidente',
       abrangencia: 'br',
       estado: null,
-      completedSteps: 1,
-      updateTime: 30
+      updateTime: 30,
+      initialSteps: 0
     };
   },
   mounted: function mounted() {
-    var _this = this;
-
     this.getGeralPresidente();
-    setTimeout(function () {
-      return _this.completedSteps = 40;
-    }, 1000);
     this.counter();
   },
   computed: {
     link: function link() {
       return getApiEndpoint(this.cargo, this.abrangencia, this.estado);
+    },
+    completedSteps: function completedSteps() {
+      if (this.geralPresidente.st) {
+        return Math.floor(this.geralPresidente.st / this.geralPresidente.s * 100);
+      } else {
+        return this.initialSteps;
+      }
     }
   },
   methods: {
     getGeralPresidente: function getGeralPresidente() {
-      var _this2 = this;
+      var _this = this;
 
-      return _axios.default.get(getApiEndpoint('presidente', 'br')).then(function (res) {
-        return _this2.geralPresidente = res.data;
+      return _axios.default.get(getApiEndpoint('presidente', 'uf', 'ac')).then(function (res) {
+        return _this.geralPresidente = res.data;
       });
     },
     orderBySeq: function orderBySeq(el) {
@@ -14272,29 +14269,31 @@ var _default = {
       });
     },
     counter: function counter() {
-      var _this3 = this;
+      var _this2 = this;
 
       setInterval(function () {
-        if (_this3.updateTime === 0) {
-          _this3.getGeralPresidente().then(function () {
-            return _this3.updateTime = 15;
+        if (_this2.updateTime === 0) {
+          _this2.getGeralPresidente().then(function () {
+            return _this2.updateTime = 30;
+          }).catch(function () {
+            return _this2.updateTime = 30;
           });
         } else {
-          _this3.updateTime--;
+          _this2.updateTime--;
         }
       }, 1000);
     }
   }
 };
 exports.default = _default;
-        var $420d82 = exports.default || module.exports;
+        var $2d2d81 = exports.default || module.exports;
       
-      if (typeof $420d82 === 'function') {
-        $420d82 = $420d82.options;
+      if (typeof $2d2d81 === 'function') {
+        $2d2d81 = $2d2d81.options;
       }
     
         /* template */
-        Object.assign($420d82, (function () {
+        Object.assign($2d2d81, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -14306,7 +14305,15 @@ exports.default = _default;
       [
         _c("div", { staticClass: "section-head mb-2 pb-3" }, [
           _c("div", { staticClass: "media" }, [
-            _vm._m(0),
+            _c("div", { staticClass: "media-body" }, [
+              _c("h2", [_vm._v("Presidente")]),
+              _vm._v(" "),
+              _c("p", { staticClass: "m-0 text-black-50" }, [
+                _vm._v("\n            seções apuradas: "),
+                _c("strong", [_vm._v(_vm._s(_vm.geralPresidente.st))]),
+                _vm._v(" de " + _vm._s(_vm.geralPresidente.s) + "\n          ")
+              ])
+            ]),
             _vm._v(" "),
             _c(
               "div",
@@ -14354,31 +14361,17 @@ exports.default = _default;
         _vm._l(_vm.orderBySeq(_vm.geralPresidente.cand), function(candidato) {
           return _c("CandidatoItem", {
             key: candidato.sqcand,
-            attrs: { candidato: candidato }
+            attrs: { candidato: candidato, geral: _vm.geralPresidente }
           })
         })
       ],
       2
     ),
     _vm._v(" "),
-    _vm._m(1)
+    _vm._m(0)
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "media-body" }, [
-      _c("h2", [_vm._v("Presidente")]),
-      _vm._v(" "),
-      _c("p", { staticClass: "m-0 text-black-50" }, [
-        _vm._v("\n            seções apuradas: "),
-        _c("strong", [_vm._v("50")]),
-        _vm._v(" de 200\n          ")
-      ])
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -14396,7 +14389,7 @@ render._withStripped = true
             render: render,
             staticRenderFns: staticRenderFns,
             _compiled: true,
-            _scopeId: "data-v-420d82",
+            _scopeId: "data-v-2d2d81",
             functional: undefined
           };
         })());
@@ -14409,9 +14402,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$420d82', $420d82);
+            api.createRecord('$2d2d81', $2d2d81);
           } else {
-            api.reload('$420d82', $420d82);
+            api.reload('$2d2d81', $2d2d81);
           }
         }
 
@@ -14464,7 +14457,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56279" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45023" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

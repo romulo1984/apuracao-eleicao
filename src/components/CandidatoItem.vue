@@ -1,7 +1,13 @@
 <script>
   export default {
     props: {
-      candidato: Object
+      candidato: Object,
+      geral: Object
+    },
+    computed: {
+      percent() {
+        return Math.floor((this.candidato.v / this.geral.vv) * 100)
+      }
     },
     methods: {
       getCandidateImage(id) {
@@ -27,12 +33,12 @@
            </h6>
          </div>
          <div class="ml-3 text-right">
-           <h4>0%</h4>
-           <h6>0 votos</h6>
+           <h4>{{ percent }}%</h4>
+           <h6>{{ candidato.v }} votos</h6>
          </div>
        </div>
        <div class="progress">
-         <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+         <div class="progress-bar" role="progressbar" :style="`width: ${percent}%`" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100"></div>
        </div>
      </div>
    </div>
