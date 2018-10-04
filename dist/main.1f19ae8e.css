@@ -1,0 +1,34 @@
+
+*[data-v-5d73f3] {
+  font-weight: 400;
+}
+.candidato-image[data-v-5d73f3] {
+  border-radius: 15px;
+  width: 52px;
+}
+.progress[data-v-5d73f3], .progress-bar[data-v-5d73f3] {
+  height: 8px;
+}
+*[data-v-420d82] {
+  font-family: 'Open Sans', sans-serif;
+}
+.section-head[data-v-420d82] {
+  border-bottom: 1px solid #ccc;
+}
+.progress[data-v-420d82], .progress-bar[data-v-420d82] {
+  height: 8px;
+}.radial-progress-container {
+  position: relative;
+}
+
+.radial-progress-inner {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  position: absolute;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

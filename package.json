@@ -1,0 +1,35 @@
+{
+  "name": "apuracao-eleicao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "assets": "^3.0.0",
+    "axios": "^0.18.0",
+    "lodash": "^4.17.11",
+    "vue": "^2.5.17",
+    "vue-hot-reload-api": "^2.3.1",
+    "vue-radial-progress": "^0.2.10"
+  },
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^2.2.0",
+    "parcel-bundler": "^1.10.1",
+    "sass": "^1.14.1",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romulo1984/apuracao-eleicao.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/romulo1984/apuracao-eleicao/issues"
+  },
+  "homepage": "https://github.com/romulo1984/apuracao-eleicao#readme"
+}
