@@ -1,0 +1,28 @@
+{
+  "name": "adonis",
+  "public": true,
+  "type": "docker",
+  "features": {
+    "cloud": "v2"
+  },
+  "alias": "apuracao-mock.now.sh",
+  "build": {
+    "env": {
+      "HOST":"0.0.0.0",
+      "PORT":"3333",
+      "NODE_ENV":"production",
+      "APP_NAME":"AdonisJs",
+      "APP_URL":"http://${HOST}:${PORT}",
+      "APP_KEY":"I1OsWtbRkWPx3cvnc1kd7npey7C2MtQa",
+      "DB_CONNECTION":"sqlite",
+      "DB_HOST":"127.0.0.1",
+      "DB_PORT":"3306",
+      "DB_USER":"root",
+      "DB_PASSWORD":"",
+      "DB_DATABASE":"adonis",
+      "HASH_DRIVER":"bcrypt"
+    }
+  }
+}
+
+

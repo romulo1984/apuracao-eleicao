@@ -4,13 +4,23 @@
   import axios from 'axios'
   import _orderBy from 'lodash/orderBy'
 
+  window.SIMULATE_ENV = true
+  window.MOCK = true
+
   function getApiEndpoint(cargo, abrangencia, uf) {
-    const BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/'
-    // const BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
+    let BASE_API = ''
+    let codEleicao = ''
+
+    if(SIMULATE_ENV) {
+      BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/'
+      codEleicao = (abrangencia === 'br') ? '000295' : '007555'
+    } else {
+      BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
+      codEleicao = (abrangencia === 'br') ? '000295' : '000297'
+    }
+
     let codUf = (abrangencia === 'br') ? 'br' : uf
-    // let codEleicao = (abrangencia === 'br') ? '0295' : '0297'
-    let codEleicao = (abrangencia === 'br') ? '0295' : '7555'
-    
+
     const codCargo = {
       presidente: 1,
       governador: 3,
@@ -20,7 +30,10 @@
       ddistrital: 8
     }
 
-    return BASE_API + codEleicao + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e00' + codEleicao + '-w.js'
+    if(MOCK)
+      return 'http://127.0.0.1:3333/mock'
+
+    return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js'
   }
 
   export default {
@@ -33,10 +46,10 @@
       return {
         geralPresidente: {},
         cargo: 'presidente',
-        abrangencia: 'br',
+        abrangencia: 'uf',
         estado: null,
-        updateTime: 30,
-        initialSteps: 0
+        updateTimeBase: 15,
+        updateTime: 15,
       }
     },
     mounted() {
@@ -48,16 +61,13 @@
         return getApiEndpoint(this.cargo, this.abrangencia, this.estado)
       },
       completedSteps() {
-        if(this.geralPresidente.st) {
-          return Math.floor((this.geralPresidente.st / this.geralPresidente.s) * 100)
-        } else {
-          return this.initialSteps
-        }
+        let completed = Math.floor((this.geralPresidente.st / this.geralPresidente.s) * 100)
+        return isNaN(completed) ? 0 : completed
       }
     },
     methods: {
       getGeralPresidente() {
-        return axios.get(getApiEndpoint('presidente', 'uf', 'ac'))
+        return axios.get(getApiEndpoint('presidente', this.abrangencia, 'es'))
           .then(res => this.geralPresidente = res.data)
       },
       orderBySeq(el) {
@@ -67,8 +77,8 @@
         setInterval(() => {
           if(this.updateTime === 0) {
             this.getGeralPresidente()
-              .then(() => this.updateTime = 30)
-              .catch(() => this.updateTime = 30)
+              .then(() => this.updateTime = this.updateTimeBase)
+              .catch(() => this.updateTime = this.updateTimeBase)
           } else {
             this.updateTime--
           }
@@ -84,7 +94,7 @@
       <div class="section-head mb-2 pb-3">
         <div class="media">
           <div class="media-body">
-            <h2>Presidente</h2>
+            <h2>Presidente <div class="btn btn-sm btn-outline-secondary turn">{{ geralPresidente.t }}º turno</div></h2>
             <p class="m-0 text-black-50">
               seções apuradas: <strong>{{ geralPresidente.st }}</strong> de {{ geralPresidente.s }}
             </p>
@@ -117,7 +127,7 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
   * {
     font-family: 'Open Sans', sans-serif;
   }
@@ -126,5 +136,15 @@
   }
   .progress, .progress-bar {
     height: 8px;
+  }
+  .turn {
+    &:hover,
+    &:active,
+    &:focus,
+    &:visited {
+      cursor: default !important;
+      background-color: inherit !important;
+      color: inherit !important;
+    }
   }
 </style>

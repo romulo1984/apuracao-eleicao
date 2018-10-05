@@ -8429,24 +8429,38 @@ var _default = {
   },
   computed: {
     percent: function percent() {
-      return Math.floor(this.candidato.v / this.geral.vv * 100);
+      var votosCandidatoTotalizados = this.candidato.v;
+      var votosValidos = this.geral.vv;
+      var percent = Math.floor(votosCandidatoTotalizados / votosValidos * 100);
+      return isNaN(percent) ? 0 : percent;
+    },
+    eleito: function eleito() {
+      var vagas = this.geral.v;
+      var votosGeralTotalizados = this.geral.tv;
+      var comparecimento = this.geral.c;
+      var percent = Math.floor(votosGeralTotalizados / comparecimento * 100);
+      if (this.candidato.e === 'n') return "<span class=\"badge badge-success\">Eleito</span>";
     }
   },
   methods: {
     getCandidateImage: function getCandidateImage(id) {
+      if (SIMULATE_ENV) {
+        return "http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/7555/fotos/br/".concat(id, ".jpeg");
+      }
+
       return "http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/295/fotos/br/".concat(id, ".jpeg");
     }
   }
 };
 exports.default = _default;
-        var $2cacc5 = exports.default || module.exports;
+        var $5d73f3 = exports.default || module.exports;
       
-      if (typeof $2cacc5 === 'function') {
-        $2cacc5 = $2cacc5.options;
+      if (typeof $5d73f3 === 'function') {
+        $5d73f3 = $5d73f3.options;
       }
     
         /* template */
-        Object.assign($2cacc5, (function () {
+        Object.assign($5d73f3, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -8475,10 +8489,9 @@ exports.default = _default;
             _vm._v(" "),
             _c("h6", { staticClass: "text-black-50" }, [
               _vm._v(
-                "\n            " +
-                  _vm._s(_vm.candidato.cc.split(" ")[0]) +
-                  "\n          "
-              )
+                "\n            " + _vm._s(_vm.candidato.cc.split(" ")[0]) + " "
+              ),
+              _c("span", { domProps: { innerHTML: _vm._s(_vm.eleito) } })
             ])
           ]),
           _vm._v(" "),
@@ -8512,7 +8525,7 @@ render._withStripped = true
             render: render,
             staticRenderFns: staticRenderFns,
             _compiled: true,
-            _scopeId: "data-v-2cacc5",
+            _scopeId: "data-v-5d73f3",
             functional: undefined
           };
         })());
@@ -8525,9 +8538,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$2cacc5', $2cacc5);
+            api.createRecord('$5d73f3', $5d73f3);
           } else {
-            api.reload('$2cacc5', $2cacc5);
+            api.reload('$5d73f3', $5d73f3);
           }
         }
 
@@ -8838,14 +8851,14 @@ var _default = {
 
 };
 exports.default = _default;
-        var $ce8e36 = exports.default || module.exports;
+        var $3fd59a = exports.default || module.exports;
       
-      if (typeof $ce8e36 === 'function') {
-        $ce8e36 = $ce8e36.options;
+      if (typeof $3fd59a === 'function') {
+        $3fd59a = $3fd59a.options;
       }
     
         /* template */
-        Object.assign($ce8e36, (function () {
+        Object.assign($3fd59a, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -8956,9 +8969,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$ce8e36', $ce8e36);
+            api.createRecord('$3fd59a', $3fd59a);
           } else {
-            api.reload('$ce8e36', $ce8e36);
+            api.reload('$3fd59a', $3fd59a);
           }
         }
 
@@ -14206,12 +14219,22 @@ var _orderBy2 = _interopRequireDefault(require("lodash/orderBy"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+window.SIMULATE_ENV = true;
+window.MOCK = true;
+
 function getApiEndpoint(cargo, abrangencia, uf) {
-  var BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/'; // const BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
+  var BASE_API = '';
+  var codEleicao = '';
 
-  var codUf = abrangencia === 'br' ? 'br' : uf; // let codEleicao = (abrangencia === 'br') ? '0295' : '0297'
+  if (SIMULATE_ENV) {
+    BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/';
+    codEleicao = abrangencia === 'br' ? '000295' : '007555';
+  } else {
+    BASE_API = 'http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/';
+    codEleicao = abrangencia === 'br' ? '000295' : '000297';
+  }
 
-  var codEleicao = abrangencia === 'br' ? '0295' : '7555';
+  var codUf = abrangencia === 'br' ? 'br' : uf;
   var codCargo = {
     presidente: 1,
     governador: 3,
@@ -14220,7 +14243,8 @@ function getApiEndpoint(cargo, abrangencia, uf) {
     destadual: 7,
     ddistrital: 8
   };
-  return BASE_API + codEleicao + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e00' + codEleicao + '-w.js';
+  if (MOCK) return 'http://127.0.0.1:3333/mock';
+  return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js';
 }
 
 var _default = {
@@ -14233,10 +14257,10 @@ var _default = {
     return {
       geralPresidente: {},
       cargo: 'presidente',
-      abrangencia: 'br',
+      abrangencia: 'uf',
       estado: null,
-      updateTime: 30,
-      initialSteps: 0
+      updateTimeBase: 15,
+      updateTime: 15
     };
   },
   mounted: function mounted() {
@@ -14248,18 +14272,15 @@ var _default = {
       return getApiEndpoint(this.cargo, this.abrangencia, this.estado);
     },
     completedSteps: function completedSteps() {
-      if (this.geralPresidente.st) {
-        return Math.floor(this.geralPresidente.st / this.geralPresidente.s * 100);
-      } else {
-        return this.initialSteps;
-      }
+      var completed = Math.floor(this.geralPresidente.st / this.geralPresidente.s * 100);
+      return isNaN(completed) ? 0 : completed;
     }
   },
   methods: {
     getGeralPresidente: function getGeralPresidente() {
       var _this = this;
 
-      return _axios.default.get(getApiEndpoint('presidente', 'uf', 'ac')).then(function (res) {
+      return _axios.default.get(getApiEndpoint('presidente', this.abrangencia, 'es')).then(function (res) {
         return _this.geralPresidente = res.data;
       });
     },
@@ -14274,9 +14295,9 @@ var _default = {
       setInterval(function () {
         if (_this2.updateTime === 0) {
           _this2.getGeralPresidente().then(function () {
-            return _this2.updateTime = 30;
+            return _this2.updateTime = _this2.updateTimeBase;
           }).catch(function () {
-            return _this2.updateTime = 30;
+            return _this2.updateTime = _this2.updateTimeBase;
           });
         } else {
           _this2.updateTime--;
@@ -14286,14 +14307,14 @@ var _default = {
   }
 };
 exports.default = _default;
-        var $2d2d81 = exports.default || module.exports;
+        var $420d82 = exports.default || module.exports;
       
-      if (typeof $2d2d81 === 'function') {
-        $2d2d81 = $2d2d81.options;
+      if (typeof $420d82 === 'function') {
+        $420d82 = $420d82.options;
       }
     
         /* template */
-        Object.assign($2d2d81, (function () {
+        Object.assign($420d82, (function () {
           var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -14306,7 +14327,14 @@ exports.default = _default;
         _c("div", { staticClass: "section-head mb-2 pb-3" }, [
           _c("div", { staticClass: "media" }, [
             _c("div", { staticClass: "media-body" }, [
-              _c("h2", [_vm._v("Presidente")]),
+              _c("h2", [
+                _vm._v("Presidente "),
+                _c(
+                  "div",
+                  { staticClass: "btn btn-sm btn-outline-secondary turn" },
+                  [_vm._v(_vm._s(_vm.geralPresidente.t) + "º turno")]
+                )
+              ]),
               _vm._v(" "),
               _c("p", { staticClass: "m-0 text-black-50" }, [
                 _vm._v("\n            seções apuradas: "),
@@ -14389,7 +14417,7 @@ render._withStripped = true
             render: render,
             staticRenderFns: staticRenderFns,
             _compiled: true,
-            _scopeId: "data-v-2d2d81",
+            _scopeId: "data-v-420d82",
             functional: undefined
           };
         })());
@@ -14402,9 +14430,9 @@ render._withStripped = true
         if (api.compatible) {
           module.hot.accept();
           if (!module.hot.data) {
-            api.createRecord('$2d2d81', $2d2d81);
+            api.createRecord('$420d82', $420d82);
           } else {
-            api.reload('$2d2d81', $2d2d81);
+            api.reload('$420d82', $420d82);
           }
         }
 
@@ -14457,7 +14485,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45023" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55861" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

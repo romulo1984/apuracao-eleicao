@@ -6,11 +6,26 @@
     },
     computed: {
       percent() {
-        return Math.floor((this.candidato.v / this.geral.vv) * 100)
+        let votosCandidatoTotalizados = this.candidato.v
+        let votosValidos = this.geral.vv
+        let percent = Math.floor((votosCandidatoTotalizados / votosValidos) * 100)
+        return isNaN(percent) ? 0 : percent
+      },
+      eleito() {
+        let vagas = this.geral.v
+        let votosGeralTotalizados = this.geral.tv
+        let comparecimento = this.geral.c
+        let percent = Math.floor((votosGeralTotalizados / comparecimento) * 100)
+
+        if(this.candidato.e === 'n')
+          return `<span class="badge badge-success">Eleito</span>`
       }
     },
     methods: {
       getCandidateImage(id) {
+        if(SIMULATE_ENV) {
+          return `http://interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/7555/fotos/br/${id}.jpeg`
+        }
         return `http://interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/295/fotos/br/${id}.jpeg`
       }
     }
@@ -29,7 +44,7 @@
              {{ candidato.nm }}
            </h5>
            <h6 class="text-black-50">
-             {{ candidato.cc.split(' ')[0] }}
+             {{ candidato.cc.split(' ')[0] }} <span v-html="eleito"></span>
            </h6>
          </div>
          <div class="ml-3 text-right">
