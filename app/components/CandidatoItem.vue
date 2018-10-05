@@ -8,17 +8,21 @@
       percent() {
         let votosCandidatoTotalizados = this.candidato.v
         let votosValidos = this.geral.vv
-        let percent = Math.floor((votosCandidatoTotalizados / votosValidos) * 100)
+        let percent = ((votosCandidatoTotalizados / votosValidos) * 100).toFixed(2)
         return isNaN(percent) ? 0 : percent
       },
       eleito() {
-        let vagas = this.geral.v
-        let votosGeralTotalizados = this.geral.tv
-        let comparecimento = this.geral.c
-        let percent = Math.floor((votosGeralTotalizados / comparecimento) * 100)
-
-        if(this.candidato.e === 'n')
-          return `<span class="badge badge-success">Eleito</span>`
+        if(this.executivo) {
+          if(this.candidato.matematicamenteEleito) {
+            return `<span class="badge badge-primary">Matematicamente Eleito</span>`
+          } else if(this.candidato.e === 's') {
+            return `<span class="badge badge-success">Segundo Turno</span>`
+          }
+        } else {
+          if(this.candidato.e === 's') {
+            return `<span class="badge badge-success">Eleito</span>`
+          }
+        }
       }
     },
     methods: {

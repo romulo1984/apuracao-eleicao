@@ -18,8 +18,10 @@
     "vue-template-compiler": "^2.5.17"
   },
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html",
+    "build:js": "parcel build main.js -d ./js-dist",
+    "deploy:surge": "npm run build && cp CNAME dist/CNAME && surge ./dist"
   },
   "repository": {
     "type": "git",

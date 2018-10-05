@@ -4,8 +4,8 @@
   import axios from 'axios'
   import _orderBy from 'lodash/orderBy'
 
-  window.SIMULATE_ENV = true
-  window.MOCK = true
+  window.SIMULATE_ENV = false
+  window.MOCK = false
 
   function getApiEndpoint(cargo, abrangencia, uf) {
     let BASE_API = ''
@@ -31,10 +31,13 @@
     }
 
     if(MOCK)
-      return 'http://127.0.0.1:3333/mock'
+      return 'http://127.0.0.1:8989/mock'
 
     return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js'
   }
+
+`d.cand.map( c => c.v > (d.vv+d.ena)/2 )`
+// onde a variavel `d` é o json lá
 
   export default {
     name: 'App',
@@ -46,7 +49,7 @@
       return {
         geralPresidente: {},
         cargo: 'presidente',
-        abrangencia: 'uf',
+        abrangencia: 'br',
         estado: null,
         updateTimeBase: 15,
         updateTime: 15,
@@ -71,7 +74,15 @@
           .then(res => this.geralPresidente = res.data)
       },
       orderBySeq(el) {
-        return _orderBy(el, item => parseInt(item.seq))
+        if(el) {
+          const newEl = el.map((item) => {
+            const calc = item.v > (parseInt(this.geralPresidente.vv) + parseInt(this.geralPresidente.ena))/2
+            const newItem = {...item, matematicamenteEleito: calc}
+            return newItem
+          })
+
+          return _orderBy(newEl, item => parseInt(item.seq))
+        }
       },
       counter() {
         setInterval(() => {
@@ -108,7 +119,7 @@
               :inner-stroke-color="'#cccccc'"
               :start-color="'#007bff'"
               :stop-color="'#007bff'">
-              <p class="m-0 p-0 text-black-50">{{ completedSteps }}%</p>
+              <p class="m-0 p-0 text-black-50" style="font-size: 14px;">{{ completedSteps }}%</p>
             </radial-progress-bar>
           </div>
         </div>
@@ -118,11 +129,6 @@
         <span class="text-black-50">atualizando em {{ updateTime }}</span>
       </div>
       <CandidatoItem v-for="candidato in orderBySeq(geralPresidente.cand)" :key="candidato.sqcand" :candidato="candidato" :geral="geralPresidente"></CandidatoItem>
-    </div>
-    <div class="col-md-4">
-      <div class="section-head mb-5 pb-3">
-        <h2>Opções</h2>
-      </div>
     </div>
   </div>
 </template>
