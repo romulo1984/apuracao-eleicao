@@ -23,59 +23,105 @@
 
     let codUf = (abrangencia === 'br') ? 'br' : uf
 
-    const codCargo = {
-      presidente: 1,
-      governador: 3,
-      senador: 5,
-      dfederal: 6,
-      destadual: 7,
-      ddistrital: 8
-    }
+    const codCargo = cargo
 
     if(MOCK)
       return 'http://127.0.0.1:8989/mock'
 
-    return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js'
+    return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo + '-e' + codEleicao + '-w.js'
   }
 
+  const updateTimeBase = 15
+
   export default {
-    name: 'App',
+    name: 'Regional',
     components: {
       CandidatoItem,
       ProgressCircle
     },
     data() {
       return {
-        geralPresidente: {},
-        cargo: 'presidente',
-        abrangencia: 'br',
+        geral: {},
+        cargo: 3,
+        abrangencia: 'uf',
         estado: 'es',
-        updateTimeBase: 15,
         updateTime: 15,
+        loading: true,
+        cargosPossiveis: {
+          3: 'Governador',
+          5: 'Senador',
+          6: 'Deputado Federal',
+          7: 'Deputado Estadual',
+          8: 'Deputado Distrital'
+        },
+        estadosPossiveis: {
+          ac: 'Acre',
+          al: 'Alagoas',
+          ap: 'Amapá',
+          am: 'Amazonas',
+          ba: 'Bahia',
+          ce: 'Ceará',
+          df: 'Distrito Federal',
+          es: 'Espírito Santo',
+          go: 'Goiás',
+          ma: 'Maranhão',
+          mt: 'Mato Grosso',
+          ms: 'Mato Grosso do Sul',
+          mg: 'Minas Gerais',
+          pa: 'Pará',
+          pb: 'Paraíba',
+          pr: 'Paraná',
+          pe: 'Pernambuco',
+          pi: 'Piauí',
+          rj: 'Rio de Janeiro',
+          rn: 'Rio Grande do Norte',
+          rs: 'Rio Grande do Sul',
+          ro: 'Rondônia',
+          rr: 'Roraima',
+          sc: 'Santa Catarina',
+          sp: 'São Paulo',
+          se: 'Sergipe',
+          to: 'Tocantins'
+        }
       }
     },
     mounted() {
       this.getGeralPresidente()
       this.counter()
     },
+    watch: {
+      cargo() {
+        this.getGeralPresidente()
+      },
+      estado() {
+        this.getGeralPresidente()
+      }
+    },
     computed: {
       link() {
         return getApiEndpoint(this.cargo, this.abrangencia, this.estado)
       },
       completedSteps() {
-        let completed = Math.floor((this.geralPresidente.st / this.geralPresidente.s) * 100)
+        let completed = Math.floor((this.geral.st / this.geral.s) * 100)
         return isNaN(completed) ? 0 : completed
       }
     },
     methods: {
       getGeralPresidente() {
-        return axios.get(getApiEndpoint(this.cargo, this.abrangencia, 'es'))
-          .then(res => this.geralPresidente = res.data)
+        this.loading = true
+        return axios.get(getApiEndpoint(this.cargo, this.abrangencia, this.estado))
+          .then(res => {
+            this.loading = false
+            return this.geral = res.data
+          })
+          .catch(() => {
+            this.loading = false
+          })
       },
       orderBySeq(el) {
         if(el) {
           const newEl = el.map((item) => {
-            const calc = item.v > (parseInt(this.geralPresidente.vv) + parseInt(this.geralPresidente.ena))/2
+            const calc = item.v > (parseInt(this.geral.vv) + parseInt(this.geral.ena))/2
             const newItem = {...item, matematicamenteEleito: calc}
             return newItem
           })
@@ -87,8 +133,8 @@
         setInterval(() => {
           if(this.updateTime === 0) {
             this.getGeralPresidente()
-              .then(() => this.updateTime = this.updateTimeBase)
-              .catch(() => this.updateTime = this.updateTimeBase)
+              .then(() => this.updateTime = updateTimeBase)
+              .catch(() => this.updateTime = updateTimeBase)
           } else {
             this.updateTime--
           }
@@ -100,13 +146,31 @@
 
 <template>
   <div class="row mt-5">
+    <div class="col-12 mb-3">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="form-group">
+            <select class="form-control form-control-lg" v-model="cargo">
+              <option v-for="(item, key) in cargosPossiveis" :key="key" :value="key">{{ item }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="form-group">
+            <select class="form-control form-control-lg" v-model="estado">
+              <option v-for="(item, key) in estadosPossiveis" :key="key" :value="key">{{ item }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="col-md-12">
       <div class="section-head mb-2 pb-3">
         <div class="media">
           <div class="media-body">
-            <h2>Presidente <div class="btn btn-sm btn-outline-secondary turn">{{ geralPresidente.t }}º turno</div></h2>
+            <h2>{{ cargosPossiveis[cargo] }} <div v-if="cargo === 3" class="btn btn-sm btn-outline-secondary turn">{{ geral.t }}º turno</div></h2>
             <p class="m-0 text-black-50">
-              seções apuradas: <strong>{{ geralPresidente.st }}</strong> de {{ geralPresidente.s }}
+              seções apuradas: <strong>{{ geral.st }}</strong> de {{ geral.s }}
             </p>
           </div>
           <div class="ml-3">
@@ -115,10 +179,16 @@
         </div>
       </div>
       <div class="mb-4">
-        <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/presidente/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
+        <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/reginal/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
         <span class="text-black-50">atualizando em {{ updateTime }}</span>
+        <div v-if="loading" class="d-inline-block ml-3">
+          <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/reginal/double-rings.5cf5e57c.svg" alt="Carregando..." width="25">
+          <span class="text-black-50">
+            carregando novos dados...
+          </span>
+        </div>
       </div>
-      <candidato-item v-for="candidato in orderBySeq(geralPresidente.cand)" :key="candidato.sqcand" :candidato="candidato" :geral="geralPresidente"></candidato-item>
+      <candidato-item v-for="candidato in orderBySeq(geral.cand)" :key="candidato.sqcand" :candidato="candidato" :geral="geral"></candidato-item>
     </div>
   </div>
 </template>

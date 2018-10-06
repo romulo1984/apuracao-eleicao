@@ -26,11 +26,11 @@
       }
     },
     methods: {
-      getCandidateImage(id) {
+      getCandidateImage(id, uf) {
         if(SIMULATE_ENV) {
-          return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/7555/fotos/br/${id}.jpeg`
+          return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/7555/fotos/${uf}/${id}.jpeg`
         }
-        return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/295/fotos/br/${id}.jpeg`
+        return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/297/fotos/${uf}/${id}.jpeg`
       }
     }
   }
@@ -39,7 +39,7 @@
 <template>
  <div>
    <div class="candidato-item media mb-5">
-     <img :src="getCandidateImage(candidato.sqcand)" :alt="candidato.nm" class="candidato-image mr-3">
+     <img :src="getCandidateImage(candidato.sqcand, geral.cdabr)" :alt="candidato.nm" class="candidato-image mr-3">
      <div class="media-body">
        <div class="media">
          <div class="media-body">

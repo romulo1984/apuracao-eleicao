@@ -25,7 +25,7 @@
     "help": "parcel build --help",
     "start": "parcel index.html",
     "build": "parcel build index.html --public-url .",
-    "build:js": "parcel build main.js -d ./js-dist",
+    "build:js": "parcel build main.js -d ./js-dist --public-url .",
     "deploy:surge": "npm run build && cp CNAME dist/CNAME && surge ./dist"
   },
   "repository": {
