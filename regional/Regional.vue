@@ -179,10 +179,10 @@
         </div>
       </div>
       <div class="mb-4">
-        <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/reginal/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
+        <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/regional/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
         <span class="text-black-50">atualizando em {{ updateTime }}</span>
         <div v-if="loading" class="d-inline-block ml-3">
-          <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/reginal/double-rings.5cf5e57c.svg" alt="Carregando..." width="25">
+          <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/regional/double-rings.5cf5e57c.svg" alt="Carregando..." width="25">
           <span class="text-black-50">
             carregando novos dados...
           </span>
