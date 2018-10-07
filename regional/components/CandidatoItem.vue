@@ -12,7 +12,8 @@
         return isNaN(percent) ? 0 : percent
       },
       eleito() {
-        if(this.executivo) {
+        // carper = tipo do cargo, onde 3 é igual a governador
+        if(this.geral.carper === 3) {
           if(this.candidato.matematicamenteEleito) {
             return `<span class="badge badge-primary">Matematicamente Eleito</span>`
           } else if(this.candidato.e === 's') {

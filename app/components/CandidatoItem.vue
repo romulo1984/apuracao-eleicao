@@ -12,16 +12,12 @@
         return isNaN(percent) ? 0 : percent
       },
       eleito() {
-        if(this.executivo) {
-          if(this.candidato.matematicamenteEleito) {
-            return `<span class="badge badge-primary">Matematicamente Eleito</span>`
-          } else if(this.candidato.e === 's') {
-            return `<span class="badge badge-success">Segundo Turno</span>`
-          }
+        if(this.candidato.matematicamenteEleito) {
+          return `<span class="badge badge-primary">Matematicamente Eleito</span>`
+        } else if(this.candidato.e === 's') {
+          return `<span class="badge badge-success">Segundo Turno</span>`
         } else {
-          if(this.candidato.e === 's') {
-            return `<span class="badge badge-success">Eleito</span>`
-          }
+          return ''
         }
       }
     },

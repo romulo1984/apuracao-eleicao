@@ -1,6 +1,10 @@
 <script>
   export default {
-    props: ['percent', 'color', 'inner'],
+    props: {
+        percent: Number,
+        color: String,
+        inner: String
+    },
     computed: {
         circle() {
             return ((this.percent / 100) * 100 * Math.PI) + ',9999'

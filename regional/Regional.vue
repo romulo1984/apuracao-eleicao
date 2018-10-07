@@ -47,6 +47,7 @@
         estado: 'es',
         updateTime: 15,
         loading: true,
+        searchCandidate: '',
         cargosPossiveis: {
           3: 'Governador',
           5: 'Senador',
@@ -91,9 +92,16 @@
     },
     watch: {
       cargo() {
+        if(this.cargo == 8) {
+          this.estado = 'df'
+        }
+
         this.getGeralPresidente()
       },
       estado() {
+        if(this.estado != 'df' && this.cargo == 8) {
+          this.cargo = 7
+        }
         this.getGeralPresidente()
       }
     },
@@ -120,10 +128,12 @@
       },
       orderBySeq(el) {
         if(el) {
-          const newEl = el.map((item) => {
+          const newEl = el.filter((item) => {
             const calc = item.v > (parseInt(this.geral.vv) + parseInt(this.geral.ena))/2
             const newItem = {...item, matematicamenteEleito: calc}
-            return newItem
+            if(this.searchCandidate === '' || newItem.nm.toLowerCase().indexOf(this.searchCandidate.toLowerCase()) > -1) {
+              return newItem
+            }
           })
 
           return _orderBy(newEl, item => parseInt(item.seq))
@@ -150,14 +160,14 @@
       <div class="row">
         <div class="col-md-5">
           <div class="form-group">
-            <select class="form-control form-control-lg" v-model="cargo">
+            <select class="form-control" v-model="cargo">
               <option v-for="(item, key) in cargosPossiveis" :key="key" :value="key">{{ item }}</option>
             </select>
           </div>
         </div>
         <div class="col-md-7">
           <div class="form-group">
-            <select class="form-control form-control-lg" v-model="estado">
+            <select class="form-control" v-model="estado">
               <option v-for="(item, key) in estadosPossiveis" :key="key" :value="key">{{ item }}</option>
             </select>
           </div>
@@ -178,15 +188,18 @@
           </div>
         </div>
       </div>
-      <div class="mb-4">
+      <div class="mb-3">
         <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/regional/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
         <span class="text-black-50">atualizando em {{ updateTime }}</span>
-        <div v-if="loading" class="d-inline-block ml-3">
+        <div v-if="loading" class="d-inline-block ml-md-3">
           <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/regional/double-rings.5cf5e57c.svg" alt="Carregando..." width="25">
           <span class="text-black-50">
-            carregando novos dados...
+            carregando...
           </span>
         </div>
+      </div>
+      <div class="form-group mb-4">
+        <input type="text" v-model="searchCandidate" placeholder="Busque pelo nome do candidato..." class="form-control">
       </div>
       <candidato-item v-for="candidato in orderBySeq(geral.cand)" :key="candidato.sqcand" :candidato="candidato" :geral="geral"></candidato-item>
     </div>
