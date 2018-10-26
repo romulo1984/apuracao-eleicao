@@ -23,9 +23,6 @@
     },
     methods: {
       getCandidateImage(id) {
-        if(SIMULATE_ENV) {
-          return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/7555/fotos/br/${id}.jpeg`
-        }
         return PROXY_TRIBUNA + `interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/295/fotos/br/${id}.jpeg`
       }
     }
@@ -35,7 +32,7 @@
 <template>
  <div>
    <div class="candidato-item media mb-5">
-     <img :src="getCandidateImage(candidato.sqcand)" :alt="candidato.nm" class="candidato-image mr-3">
+     <img :src="getCandidateImage(candidato.sqcand)" class="candidato-image mr-3">
      <div class="media-body">
        <div class="media">
          <div class="media-body">
@@ -53,7 +50,7 @@
          </div>
        </div>
        <div class="pprogress">
-         <div class="pprogress-bar" role="pprogressbar" :style="`width: ${percent}%`" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100"></div>
+         <div :key="`${candidato.sqcand}-progress`" class="pprogress-bar" role="pprogressbar" :style="`width: ${percent}%`" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100"></div>
        </div>
      </div>
    </div>
@@ -67,10 +64,8 @@
   .candidato-image {
     border-radius: 15px;
     width: 52px;
-  }
-
-  pprogress {
-    vertical-align: baseline;
+    height: 73px;
+    background-color: #ccc;
   }
 
   .pprogress {

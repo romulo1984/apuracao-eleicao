@@ -4,24 +4,15 @@
   import axios from 'axios'
   import _orderBy from 'lodash/orderBy'
 
-  window.SIMULATE_ENV = false
-  window.MOCK = false
-  window.PROXY_TRIBUNA = 'http://tribunaonline.com.br/secureproxy/?'
-  //window.PROXY_TRIBUNA = 'http://'
+  window.PROXY_TRIBUNA = 'https://tribunaonline.com.br/secureproxy/?'
+  // window.PROXY_TRIBUNA = 'http://'
 
-  function getApiEndpoint(cargo, abrangencia, uf) {
+  function getApiEndpoint(cargo, turno) {
     let BASE_API = ''
     let codEleicao = ''
 
-    if(SIMULATE_ENV) {
-      BASE_API = PROXY_TRIBUNA + 'interessados.divulgacao.tse.jus.br/2018/divulgacao/homologacaotre/'
-      codEleicao = (abrangencia === 'br') ? '000295' : '007555'
-    } else {
-      BASE_API = PROXY_TRIBUNA + 'interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
-      codEleicao = (abrangencia === 'br') ? '000295' : '000297'
-    }
-
-    let codUf = (abrangencia === 'br') ? 'br' : uf
+    BASE_API = PROXY_TRIBUNA + 'interessados.divulgacao.tse.jus.br/2018/divulgacao/oficial/'
+    codEleicao = (turno === 1) ? '000295' : '000296'
 
     const codCargo = {
       presidente: 1,
@@ -32,10 +23,7 @@
       ddistrital: 8
     }
 
-    if(MOCK)
-      return 'http://127.0.0.1:8989/mock'
-
-    return BASE_API + parseInt(codEleicao) + '/dadosdivweb/' + codUf + '/' + codUf + '-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js'
+    return BASE_API + parseInt(codEleicao) + '/dadosdivweb/br/br-c000' + codCargo[cargo] + '-e' + codEleicao + '-w.js'
   }
 
   export default {
@@ -48,8 +36,7 @@
       return {
         geralPresidente: {},
         cargo: 'presidente',
-        abrangencia: 'br',
-        estado: 'es',
+        turno: 2,
         updateTimeBase: 15,
         updateTime: 15,
       }
@@ -60,21 +47,15 @@
     },
     computed: {
       link() {
-        return getApiEndpoint(this.cargo, this.abrangencia, this.estado)
+        return getApiEndpoint(this.cargo, this.turno)
       },
       completedSteps() {
         let completed = Math.floor((this.geralPresidente.st / this.geralPresidente.s) * 100)
         return isNaN(completed) ? 0 : completed
-      }
-    },
-    methods: {
-      getGeralPresidente() {
-        return axios.get(getApiEndpoint(this.cargo, this.abrangencia, 'es'))
-          .then(res => this.geralPresidente = res.data)
       },
-      orderBySeq(el) {
-        if(el) {
-          const newEl = el.map((item) => {
+      candidatoOrderedByName() {
+        if(this.geralPresidente.cand) {
+          const newEl = this.geralPresidente.cand.map((item) => {
             const calc = item.v > (parseInt(this.geralPresidente.vv) + parseInt(this.geralPresidente.ena))/2
             const newItem = {...item, matematicamenteEleito: calc}
             return newItem
@@ -82,17 +63,30 @@
 
           return _orderBy(newEl, item => parseInt(item.seq))
         }
+        return [];
+      }
+    },
+    methods: {
+      changeTurno(turno) {
+        this.turno = turno
+        this.getGeralPresidente()
+      },
+      getGeralPresidente() {
+        return axios.get(getApiEndpoint(this.cargo, this.turno))
+          .then(res => this.geralPresidente = res.data)
       },
       counter() {
         setInterval(() => {
-          if(this.updateTime === 0) {
-            this.getGeralPresidente()
-              .then(() => this.updateTime = this.updateTimeBase)
-              .catch(() => this.updateTime = this.updateTimeBase)
-          } else {
-            this.updateTime--
-          }
-        }, 1000)
+            if(this.turno === 2) {
+              if(this.updateTime === 0) {
+                this.getGeralPresidente()
+                  .then(() => this.updateTime = this.updateTimeBase)
+                  .catch(() => this.updateTime = this.updateTimeBase)
+              } else {
+                this.updateTime--
+              }
+            }
+          }, 1000)
       }
     }
   }
@@ -104,7 +98,11 @@
       <div class="section-head mb-2 pb-3">
         <div class="media">
           <div class="media-body">
-            <h2>Presidente <div class="btn btn-sm btn-outline-secondary turn">{{ geralPresidente.t }}º turno</div></h2>
+            <h2>
+              Presidente
+              <div class="btn btn-sm btn-outline-secondary turn" @click="changeTurno(1)" :class="{'selected': turno === 1}">1º turno</div>
+              <div class="btn btn-sm btn-outline-secondary turn" @click="changeTurno(2)" :class="{'selected': turno === 2}">2º turno</div>
+            </h2>
             <p class="m-0 text-black-50">
               seções apuradas: <strong>{{ geralPresidente.st }}</strong> de {{ geralPresidente.s }}
             </p>
@@ -114,11 +112,14 @@
           </div>
         </div>
       </div>
-      <div class="mb-4">
+      <div class="mb-4" v-if="turno === 2">
         <img src="https://s3.amazonaws.com/static.tribunaonline.com.br/general-assets-apps/apuracao/presidente/bar-chart-preloader.176c94fd.svg" alt="Carregando..." width="25">
         <span class="text-black-50">atualizando em {{ updateTime }}</span>
       </div>
-      <candidato-item v-for="candidato in orderBySeq(geralPresidente.cand)" :key="candidato.sqcand" :candidato="candidato" :geral="geralPresidente"></candidato-item>
+      <div class="mb-4" v-else>
+        <span class="text-black-50">apuração encerrada</span>
+      </div>
+      <candidato-item v-for="candidato in candidatoOrderedByName" :key="candidato.sqcand" :candidato="candidato" :geral="geralPresidente"></candidato-item>
     </div>
   </div>
 </template>
@@ -132,13 +133,14 @@
   }
   
   .turn {
-    &:hover,
-    &:active,
-    &:focus,
-    &:visited {
-      cursor: default !important;
-      background-color: inherit !important;
-      color: inherit !important;
+    opacity: 0.4;
+    &.selected {
+      opacity: 1;
+    }
+    &:hover {
+      color: #000 !important;
+      background-color: #fff;
+      opacity: 0.6;
     }
   }
 

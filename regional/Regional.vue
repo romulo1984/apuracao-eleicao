@@ -6,8 +6,8 @@
 
   window.SIMULATE_ENV = false
   window.MOCK = false
-  window.PROXY_TRIBUNA = 'http://tribunaonline.com.br/secureproxy/?'
-  //window.PROXY_TRIBUNA = 'http://'
+  //window.PROXY_TRIBUNA = 'https://tribunaonline.com.br/secureproxy/?'
+  window.PROXY_TRIBUNA = 'http://'
 
   function getApiEndpoint(cargo, abrangencia, uf) {
     let BASE_API = ''
