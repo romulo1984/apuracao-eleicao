@@ -6,7 +6,7 @@
   "dependencies": {
     "assets": "^3.0.0",
     "axios": "^0.18.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "vue": "^2.5.17",
     "vue-hot-reload-api": "^2.3.1"
   },
